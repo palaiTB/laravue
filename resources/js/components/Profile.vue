@@ -6,7 +6,7 @@
                     <div class="card-header">Profile</div>
 
                     <div class="card-body">
-                        Teri Maa ki chut bsdk
+                        User Profile Details
                     </div>
                 </div>
             </div>

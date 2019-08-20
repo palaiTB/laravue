@@ -8,6 +8,38 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 import VueRouter from 'vue-router'
+import { Form, HasError, AlertError } from 'vform'
+// Progress Bar
+
+import VueProgressBar from 'vue-progressbar'
+
+Vue.use(VueProgressBar, {
+    color: 'rgb(143, 255, 199)',
+    failedColor: 'red',
+    height: '2px'
+})
+//------------------------------
+
+// ES6 Modules or TypeScript
+import Swal from 'sweetalert2'
+
+// CommonJS
+window.Swal = Swal
+
+//Toast
+const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000
+})
+
+window.Toast = Toast
+//-------------------------------
+
+window.Form=Form;
+Vue.component(HasError.name, HasError)
+Vue.component(AlertError.name, AlertError)
 
 Vue.use(VueRouter)
 import ExampleComponent from './components/ExampleComponent.vue'
