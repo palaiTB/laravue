@@ -1902,10 +1902,15 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       users: {},
+      next: '',
       form: new Form({
         name: '',
         email: '',
@@ -1914,32 +1919,74 @@ __webpack_require__.r(__webpack_exports__);
     };
   },
   methods: {
-    loadUser: function loadUser() {
+    deleteUser: function deleteUser(id) {
       var _this = this;
 
-      axios.get('api/user').then(function (_ref) {
-        var data = _ref.data;
-        return _this.users = data;
+      //SWEETALERT-----------------------
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      }).then(function (result) {
+        if (result.value) {
+          //Send the api request for deletion
+          _this.form["delete"]('api/user/' + id).then(function () {
+            Swal.fire('Deleted!', 'Your record has been deleted.', 'success');
+            Fire.$emit('AfterCreate');
+          });
+        }
+      }); //----------------------------------------------
+    },
+
+    /*paginate()
+    {
+        axios.get(this.next)
+            .then(response => {
+               console.log(response.data.data)
+            });
+    },*/
+    loadUser: function loadUser() {
+      var _this2 = this;
+
+      axios.get('api/user') // .then(({data}) => (this.users = data));
+      .then(function (response) {
+        //ES6 format
+        console.log(response.data);
+        _this2.users = response.data;
       });
     },
     createUser: function createUser() {
+      var _this3 = this;
+
       this.$Progress.start();
-      this.form.post('api/user');
-      $('#exampleModalCenter').modal('hide');
-      Toast.fire({
-        type: 'success',
-        title: 'User Created in successfully'
+      this.form.post('api/user').then(function () {
+        Fire.$emit('AfterCreate'); //Creates a custom event
+
+        $('#exampleModalCenter').modal('hide');
+        Toast.fire({
+          //Sweet Alert
+          type: 'success',
+          title: 'User Created in successfully'
+        });
+
+        _this3.$Progress.finish();
+      })["catch"](function () {
+        _this3.$Progress.fail();
       });
-      this.$Progress.finish();
     }
   },
   created: function created() {
-    var _this2 = this;
+    var _this4 = this;
 
     this.loadUser();
-    setInterval(function () {
-      return _this2.loadUser();
-    }, 3000); //A function has to call another function in setInterval
+    Fire.$on('AfterCreate', function () {
+      //$on receives the event and subsequently calls for the loadUser() and hence our data is updated
+      _this4.loadUser();
+    }); // setInterval( () => this.loadUser() , 3000); //A function has to call another function in setInterval
   }
 });
 
@@ -41318,7 +41365,7 @@ var render = function() {
                 "tbody",
                 _vm._l(_vm.users.data, function(user, index) {
                   return _c("tr", { key: index }, [
-                    _c("td", [_vm._v(_vm._s(index + 1))]),
+                    _c("td", [_vm._v(_vm._s(user.id))]),
                     _vm._v(" "),
                     _c("td", [_vm._v(_vm._s(user.name))]),
                     _vm._v(" "),
@@ -41328,14 +41375,40 @@ var render = function() {
                     _vm._v(" "),
                     _vm._m(2, true),
                     _vm._v(" "),
-                    _vm._m(3, true)
+                    _c("td", [
+                      _vm._m(3, true),
+                      _vm._v(" "),
+                      _c(
+                        "button",
+                        {
+                          staticClass: "btn",
+                          on: {
+                            click: function($event) {
+                              return _vm.deleteUser(user.id)
+                            }
+                          }
+                        },
+                        [
+                          _c("img", {
+                            attrs: {
+                              src:
+                                "https://img.icons8.com/material-outlined/24/000000/delete-sign.png"
+                            }
+                          })
+                        ]
+                      )
+                    ])
                   ])
                 }),
                 0
               )
             ])
           ])
-        ])
+        ]),
+        _vm._v(" "),
+        _vm._m(4),
+        _vm._v(" "),
+        _c("br")
       ])
     ]),
     _vm._v(" "),
@@ -41360,7 +41433,7 @@ var render = function() {
           },
           [
             _c("div", { staticClass: "modal-content" }, [
-              _vm._m(4),
+              _vm._m(5),
               _vm._v(" "),
               _c(
                 "form",
@@ -41489,7 +41562,7 @@ var render = function() {
                     )
                   ]),
                   _vm._v(" "),
-                  _vm._m(5)
+                  _vm._m(6)
                 ]
               )
             ])
@@ -41555,23 +41628,21 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("td", [
-      _c("a", { attrs: { href: "" } }, [
-        _c("img", {
-          attrs: {
-            src:
-              "https://img.icons8.com/material-two-tone/24/000000/edit--v1.png"
-          }
-        })
-      ]),
-      _vm._v(" "),
-      _c("a", { attrs: { href: "" } }, [
-        _c("img", {
-          attrs: {
-            src:
-              "https://img.icons8.com/material-outlined/24/000000/delete-sign.png"
-          }
-        })
+    return _c("a", { attrs: { href: "" } }, [
+      _c("img", {
+        attrs: {
+          src: "https://img.icons8.com/material-two-tone/24/000000/edit--v1.png"
+        }
+      })
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "text-right" }, [
+      _c("button", { staticClass: "btn btn-outline-success" }, [
+        _vm._v("Next Page")
       ])
     ])
   },
@@ -56681,6 +56752,8 @@ window.Toast = Toast; //-------------------------------
 window.Form = vform__WEBPACK_IMPORTED_MODULE_1__["Form"];
 Vue.component(vform__WEBPACK_IMPORTED_MODULE_1__["HasError"].name, vform__WEBPACK_IMPORTED_MODULE_1__["HasError"]);
 Vue.component(vform__WEBPACK_IMPORTED_MODULE_1__["AlertError"].name, vform__WEBPACK_IMPORTED_MODULE_1__["AlertError"]);
+window.Fire = new Vue(); //Fire is a global instance of Vue hence has access to $emit and $on
+
 Vue.use(vue_router__WEBPACK_IMPORTED_MODULE_0__["default"]);
 
 

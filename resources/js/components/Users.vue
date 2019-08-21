@@ -27,14 +27,14 @@
                       </thead>
                       <tbody>
                         <tr v-for = "(user,index) in users.data" :key="index">  <!--  Users is an object and data is our required attribute -->
-                          <td>{{index+1}}</td>
+                          <td>{{user.id}}</td>
                           <td>{{user.name}}</td>
                             <td>{{user.email}}</td>
                           <td>{{user.created_at}}</td>
                           <td><span class="tag tag-success">Approved</span></td>
                           <td>
                               <a href=""><img src="https://img.icons8.com/material-two-tone/24/000000/edit--v1.png"></a>
-                              <a href=""><img src="https://img.icons8.com/material-outlined/24/000000/delete-sign.png"></a>
+                              <button class="btn" @click="deleteUser(user.id)"><img src="https://img.icons8.com/material-outlined/24/000000/delete-sign.png"></button>
                           </td>
                         </tr>
                       </tbody>
@@ -42,6 +42,10 @@
                   </div>
                   <!-- /.card-body -->
                 </div>
+                  <div class="text-right">
+                      <button class="btn btn-outline-success">Next Page</button>
+                  </div>
+                  <br>
                 <!-- /.card -->
               </div>
             </div>
@@ -92,6 +96,7 @@
         data(){
           return{
               users: {},
+              next: '',
               form: new Form({
                 name: '',
                 email: '',
@@ -100,24 +105,76 @@
           }
         },
         methods:{
+
+            deleteUser(id){
+                //SWEETALERT-----------------------
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.value) {
+
+                        //Send the api request for deletion
+                        this.form.delete('api/user/'+ id)
+                        .then(()=> {
+                            Swal.fire(
+                                'Deleted!',
+                                'Your record has been deleted.',
+                                'success'
+                            )
+                            Fire.$emit('AfterCreate');
+                        })
+                    }
+                })
+                //----------------------------------------------
+
+            },
+
+            /*paginate()
+            {
+                axios.get(this.next)
+                    .then(response => {
+                       console.log(response.data.data)
+                    });
+            },*/
             loadUser()
             {
-                axios.get('api/user').then(({data}) => (this.users = data));
+                axios.get('api/user')
+                    // .then(({data}) => (this.users = data));
+                    .then(response => {   //ES6 format
+                       console.log(response.data);
+                       this.users = response.data;
+                    });
             },
             createUser()
             {   this.$Progress.start();
-                this.form.post('api/user');
+                this.form.post('api/user')
+                .then(() => {
+                Fire.$emit('AfterCreate'); //Creates a custom event
+
                 $('#exampleModalCenter').modal('hide');
-                Toast.fire({
+                Toast.fire({   //Sweet Alert
                     type: 'success',
                     title: 'User Created in successfully'
                 })
                 this.$Progress.finish();
+                })
+                .catch(()=> {
+                    this.$Progress.fail();
+            });
             }
         },
         created() {
             this.loadUser();
-            setInterval( () => this.loadUser() , 3000); //A function has to call another function in setInterval
+            Fire.$on('AfterCreate',() => {  //$on receives the event and subsequently calls for the loadUser() and hence our data is updated
+                this.loadUser();
+            });
+            // setInterval( () => this.loadUser() , 3000); //A function has to call another function in setInterval
         }
     }
 </script>

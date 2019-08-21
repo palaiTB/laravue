@@ -82,14 +82,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 </router-link>
               </li>
             </ul>
-            <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <router-link to="/users" class="nav-link ">
-                  <img src="https://img.icons8.com/officexs/16/000000/select-users.png">
-                  <p>Inactive Page</p>
-                </router-link>
-              </li>
-            </ul>
+{{--            <ul class="nav nav-treeview">--}}
+{{--              <li class="nav-item">--}}
+{{--                <router-link to="/users" class="nav-link ">--}}
+{{--                  <img src="https://img.icons8.com/officexs/16/000000/select-users.png">--}}
+{{--                  <p>Inactive Page</p>--}}
+{{--                </router-link>--}}
+{{--              </li>--}}
+{{--            </ul>--}}
           </li>
           <li class="nav-item">
             <router-link to="/dashboard" class="nav-link">

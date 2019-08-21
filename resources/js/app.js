@@ -41,6 +41,8 @@ window.Form=Form;
 Vue.component(HasError.name, HasError)
 Vue.component(AlertError.name, AlertError)
 
+window.Fire = new Vue();  //Fire is a global instance of Vue hence has access to $emit and $on
+
 Vue.use(VueRouter)
 import ExampleComponent from './components/ExampleComponent.vue'
 import Dashboard from './components/Dashboard.vue'
