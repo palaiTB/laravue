@@ -7,7 +7,7 @@
                     <h3 class="card-title">User's Table</h3>
 
                     <div class="card-tools">
-                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#exampleModalCenter">
+                        <button type="button" class="btn btn-success" @click="newModal">
                             Add New
                         </button>
                     </div>
@@ -33,7 +33,7 @@
                           <td>{{user.created_at}}</td>
                           <td><span class="tag tag-success">Approved</span></td>
                           <td>
-                              <a href=""><img src="https://img.icons8.com/material-two-tone/24/000000/edit--v1.png"></a>
+                              <button class="btn" @click="editModal(user)"><img src="https://img.icons8.com/material-two-tone/24/000000/edit--v1.png"></button>
                               <button class="btn" @click="deleteUser(user.id)"><img src="https://img.icons8.com/material-outlined/24/000000/delete-sign.png"></button>
                           </td>
                         </tr>
@@ -54,12 +54,13 @@
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLongTitle">Add New</h5>
+                        <h5 class="modal-title" v-if="!edit" id="exampleModalLongTitle">Add New</h5>
+                        <h5 class="modal-title" v-if="edit" id="exampleModalLongTitle">Update Details</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                        <form @submit.prevent="createUser">
+                        <form @submit.prevent="!edit? createUser() : updateUser()">
                     <div class="modal-body">
                         <div class="form-group">
                             <label>Name</label>
@@ -82,7 +83,8 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-outline-danger" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Create User</button>
+                        <button v-if="!edit" type="submit" class="btn btn-primary">Create User</button>
+                        <button v-if="edit" type="submit" class="btn btn-primary">Update User</button>
                     </div>
                 </form>
                 </div>
@@ -95,9 +97,11 @@
     export default {
         data(){
           return{
+              edit : false,
               users: {},
               next: '',
               form: new Form({
+                id:'',
                 name: '',
                 email: '',
                 password: '',
@@ -105,7 +109,36 @@
           }
         },
         methods:{
+            updateUser()
+            {
+                console.log("hello");
+                this.form.put('api/user/'+this.form.id)
+                    .then(() => {
+                        Fire.$emit('AfterCreate'); //Creates a custom event
 
+                        $('#exampleModalCenter').modal('hide');
+                        Toast.fire({   //Sweet Alert
+                            type: 'success',
+                            title: 'User Updated in successfully'
+                        })
+                        this.$Progress.finish();
+                    })
+                    .catch(()=> {
+                        this.$Progress.fail();
+                    });
+            },
+            editModal(user)
+            {
+                this.edit = true;
+                this.form.reset();
+                $('#exampleModalCenter').modal('show');
+                this.form.fill(user);
+            },
+            newModal()
+            {   this.edit = false;
+                this.form.reset();
+                $('#exampleModalCenter').modal('show');
+            },
             deleteUser(id){
                 //SWEETALERT-----------------------
                 Swal.fire({
@@ -152,7 +185,8 @@
                     });
             },
             createUser()
-            {   this.$Progress.start();
+            {
+                this.$Progress.start();
                 this.form.post('api/user')
                 .then(() => {
                 Fire.$emit('AfterCreate'); //Creates a custom event

@@ -15,6 +15,12 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+//    public function __construct()
+//    {
+//        $this->middleware('auth:api');
+//    }
+
     public function index()
     {
         return User::latest()->paginate(10);
@@ -68,7 +74,19 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $user = User::findOrFail($id);
+
+        $this->validate($request,
+            [
+                'name' => 'required|string|max:191',
+                'email' => 'required|string| max:191|email|unique:users,email,'.$user->id, //The user can update his email or leave it as it is . Mind the commas in the statement
+                'password' => 'sometimes|string'
+            ]
+        );
+
+        $user->update($request->all());
+
+        return (json_encode(["message" => "success"]));
     }
 
     /**
