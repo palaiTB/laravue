@@ -22,7 +22,7 @@
                             <th>Email</th>
                           <th>Date</th>
                           <th>Status</th>
-                          <th>Reason</th>
+                          <th>Actions</th>
                         </tr>
                       </thead>
                       <tbody>

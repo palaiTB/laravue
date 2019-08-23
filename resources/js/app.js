@@ -48,13 +48,15 @@ import ExampleComponent from './components/ExampleComponent.vue'
 import Dashboard from './components/Dashboard.vue'
 import Profile from './components/Profile.vue'
 import Users from './components/Users.vue'
+import Developer from './components/Developer.vue'
+
 
 let routes = [
     {path: '/check', component: ExampleComponent},
+    {path: '/developer', component: Developer},
     {path: '/dashboard', component: Dashboard},
     {path: '/profile', component: Profile},
     {path: '/users', component: Users},
-
 ]
 
 let router = new VueRouter({
@@ -72,6 +74,23 @@ let router = new VueRouter({
 
 // const files = require.context('./', true, /\.vue$/i);
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
+
+//Laravel Passport--------------------------------------------
+Vue.component(
+    'passport-clients',
+    require('./components/passport/Clients.vue').default
+);
+
+Vue.component(
+    'passport-authorized-clients',
+    require('./components/passport/AuthorizedClients.vue').default
+);
+
+Vue.component(
+    'passport-personal-access-tokens',
+    require('./components/passport/PersonalAccessTokens.vue').default
+);
+//------------------------------------------------------------------
 
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 

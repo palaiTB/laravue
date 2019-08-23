@@ -97,6 +97,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
               <p>Dashboard</p>
             </router-link>
           </li>
+            <li class="nav-item">
+                <router-link to="/developer" class="nav-link">
+                    <img src="https://img.icons8.com/ios-glyphs/16/000000/developer.png">
+                    <p>
+                        Developer
+                    </p>
+                </router-link>
+            </li>
           <li class="nav-item">
             <router-link to="/profile" class="nav-link">
               <img src="https://img.icons8.com/material-sharp/16/000000/cat-profile.png">
