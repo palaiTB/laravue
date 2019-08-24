@@ -5,10 +5,13 @@
                 <div class="card card-widget widget-user">
                     <!-- Add the bg color to the header using any of the bg-* classes -->
                     <div class="widget-user-header text-white" style="min-height: 20rem; background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%,  rgba(0, 0, 0, 1) 100%), url(./images/check.jpg); background-position: center; background-size: cover;" >
-                        <h3 class="widget-user-username">Elizabeth Pierce</h3>
+                        <h3 class="widget-user-username">{{this.form.name}}</h3>
                         <h5 class="widget-user-desc">Web Designer</h5>
                     </div>
 <!--                    <div class="widget-user-image">-->
+                    <div class="widget-user-image">
+                        <img :src="getProfilePhoto()">
+                    </div>
 <!--                        <img class="img-circle" >-->
 <!--                    </div>-->
                     <div class="card-footer">
@@ -87,14 +90,14 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="password" class="col-sm-12 control-label">Passport (leave empty if not changing)</label>
+                                        <label for="password" class="col-sm-12 control-label">Password (leave empty if not changing)</label>
 
                                         <div class="col-sm-12">
                                             <input type="password"
                                                    v-model="form.password"
                                                    class="form-control"
                                                    id="password"
-                                                   placeholder="Passport"
+                                                   placeholder="Password"
                                                    :class="{ 'is-invalid': form.errors.has('password') }"
                                             >
                                             <has-error :form="form" field="password"></has-error>
@@ -136,6 +139,57 @@
         },
         mounted() {
             console.log('Component mounted.')
+        },
+
+        methods:{
+
+            getProfilePhoto(){
+                let photo = (this.form.photo.length > 200) ? this.form.photo : "images/profile/"+ this.form.photo ;   //Code for instant profile image change
+                return photo;
+            },
+            updateInfo(){
+                this.$Progress.start();
+                if(this.form.password == ''){
+                    this.form.password = undefined;
+                }
+                this.form.put('api/profile')
+                    .then(()=>{
+                        Fire.$emit('AfterCreate');
+                        this.$Progress.finish();
+                        Toast.fire({   //Sweet Alert
+                            type: 'success',
+                            title: 'Uploaded Successfully :)'
+                        })
+                    })
+                    .catch(() => {
+                        this.$Progress.fail();
+                    });
+            },
+          updateProfile(e)
+          {
+              /* FILE UPLOAD FUNCTION*/
+
+              let file = e.target.files[0];
+              // console.log(file);
+              let reader = new FileReader();
+              if(file['size'] < 200000)
+              {
+                  reader.onloadend = () => {
+                      // console.log('RESULT', reader.result);
+                      this.form.photo = reader.result;
+                  }
+                  reader.readAsDataURL(file);
+              }
+              else
+              {
+                  Toast.fire({   //Sweet Alert
+                      type: 'error',
+                      title: 'File Size Exceeds 2MB'
+                  })
+              }
+
+              //////////////////////////////////////
+          }
         },
         //
         created()

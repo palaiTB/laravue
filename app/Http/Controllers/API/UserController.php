@@ -60,6 +60,43 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+
+    public function updateProfile(Request $request)
+    {
+        $user = auth('api')->user();
+
+        $this->validate($request,
+            [
+                'name' => 'required|string|max:191',
+                'email' => 'required|string| max:191|email|unique:users,email,'.$user->id, //The user can update his email or leave it as it is . Mind the commas in the statement
+                'password' => 'sometimes|string'
+            ]
+        );
+
+        if($request->photo != $user['photo'])
+        {
+            $name = time().'.'.explode('/', explode(':', substr($request->photo, 0 ,strpos($request->photo, ';')))[1])[1];
+
+            \Image::make($request->photo)->save(public_path('images/profile/').$name);
+
+            if(file_exists(public_path('images/profile/').$user['photo']))
+            {
+                @unlink(public_path('images/profile/').$user['photo']);
+            }
+
+            DB::table('users')->where('id', $request->id)->update(['photo' => $name]);
+//            $request->merge(['photo' => $name]);
+        }
+
+        if(!empty($request->password))
+        {
+            DB::table('users')->where('id', $request->id)->update(['password' => Hash::make($request['password'])]);
+        }
+
+        $user->update($request->all());
+        return ['msg' => 'success', 'pass' => Hash::make($request['password']) ];
+    }
+
     public function profile()
     {
         return auth('api')->user();

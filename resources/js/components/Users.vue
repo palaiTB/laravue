@@ -168,13 +168,6 @@
 
             },
 
-            /*paginate()
-            {
-                axios.get(this.next)
-                    .then(response => {
-                       console.log(response.data.data)
-                    });
-            },*/
             loadUser()
             {
                 axios.get('api/user')
@@ -192,10 +185,10 @@
                 Fire.$emit('AfterCreate'); //Creates a custom event
 
                 $('#exampleModalCenter').modal('hide');
-                Toast.fire({   //Sweet Alert
-                    type: 'success',
-                    title: 'User Created in successfully'
-                })
+                    Toast.fire({   //Sweet Alert
+                        type: 'success',
+                        title: 'User Created in successfully'
+                    })
                 this.$Progress.finish();
                 })
                 .catch(()=> {
